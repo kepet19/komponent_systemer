@@ -1,17 +1,18 @@
-\begin{center}
-{ \LARGE \bfseries Assignment Portfolio 1\\[0.4cm]}
-\end{center}
+\title{Assignment Portfolio 1}
+\author{Kevin K. M. Petersen \and Eksamens nr: 480900}
+\maketitle
 
 \section{Introduktion}
+Link til kildekode \href{https://github.com/kepet19/komponent_systemer}{github.com/kepet19/komponent\_systemer}
+
 Formålet med opgaven er at komme igennem de forskellige komponent basseret
 arkitektur. De forskellige komponent arkitektur er: 
 
-Link til kildekode \href{}{}
 
 \begin{itemize}
  \item whiteboard modellen (Den der er standard i java)
  \item netbeans module system
- \item OSGi 
+ \item OSGi {Declarative Services \& Bundle Context API}
 \end{itemize}
 
 \section{Javalab}
@@ -83,7 +84,7 @@ system ved at den skal loade modulet som der er blevet lavet.
 .3 main.
 .4 java.
 .5 dk.sdu.mmmi.cbse.astroid6shapes.
-.6 AsteroidPlugin.java.
+.6 \textbf{AsteroidPlugin.java}.
 .6 AsteroidProcessor.java.
 .6 AsteroidSplitterImpl.java.
 .3 nbm.
@@ -92,6 +93,32 @@ system ved at den skal loade modulet som der er blevet lavet.
 .4 dk.sdu.mmmi.cbse.astroid6shapes.
 .5 Bundle.properties.
 }
+
+I \textbf{Listing \ref{lst:AsteroidPlugin}} ses implementation på klassen
+\textbf{AsteroidPlugin.java}. På linje 6 ses en decorator der fortæller netbeanas module 
+system at dette er en klasse som provider IGamePluginService interfacet.
+
+\begin{lstlisting}[caption={AsteroidPlugin.java}, label={lst:AsteroidPlugin}, language=java]
+package dk.sdu.mmmi.cbse.astroid6shapes;
+
+import dk.sdu.mmmi.cbse...*;
+import org.openide.util.lookup.ServiceProvider;
+
+@ServiceProvider(service = IGamePluginService.class)
+public class AsteroidPlugin implements IGamePluginService{
+	@Override
+    public void start(GameData gameData, World world) {
+        ...
+    }
+
+    @Override
+    public void stop(GameData gameData, World world) {
+		world.getEntities(Astroid6shapes.class).forEach(asteroid -> {
+			world.removeEntity(asteroid);
+		});
+    }
+}
+\end{lstlisting}
 
 \subsection{Netbeans module system lille og stor}
 Netbeans module system har 2 forskellige systemer en slim uden noget grafisk,
@@ -194,6 +221,10 @@ Bundle-ActivationPolicy: lazy
 Service-Component: META-INF/entityprocessor.xml, META-INF/gameplugin.xml
 \end{lstlisting}
 
+I \textbf{Listing \ref{lst:gameplugin.xml}} ses på linje 3 at det er
+implementation klassen som den peger på og den implementere interfaces som er
+listest på linje 5.
+
 \begin{lstlisting}[caption={gameplugin.xml}, label={lst:gameplugin.xml}, language=xml]
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="dk.sdu.mmmi.cbse.playersystem.plugin">
@@ -222,6 +253,32 @@ Service-Component: META-INF/entityprocessor.xml, META-INF/gameplugin.xml
 .6 Enemy2Processor.java.
 }
 
+\subsection{Register komponent}
+
+I \textbf{Listing \ref{lst:pom-activator}} ses den pom.xml som peger på den
+klasse som har implementeret bundle activator.
+
+\begin{lstlisting}[caption={pom.xml}, label={lst:pom-activator}, language=xml]
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>dk.sdu.mmmi.cbse.osgienemy2.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+\end{lstlisting}
+
+
+I \textbf{Listing \ref{lst:Activator.java}} ses den klasse som har implementeret
+bundle activator.
+
 \begin{lstlisting}[caption={Activator.java}, label={lst:Activator.java}, language=java]
 package dk.sdu.mmmi.cbse.osgienemy2;
 
@@ -245,32 +302,10 @@ public class Activator implements BundleActivator {
 }
 \end{lstlisting}
 
-I \textbf{Listing \ref{lst:Activator.java}} ses den klasse som har implementeret
-bundle activator.
 
 
 
-\subsection{Register komponent}
-Se video \href{https://www.youtube.com/watch?v=nB84hmut8W0}{youtu.be/nB84hmut8W0}
 
 \subsection{Komponentdet bliver loadet og undloadet via Apache gogo shell}
-\begin{lstlisting}[caption={pom.xml}, label={lst:pom-activator}, language=xml]
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>dk.sdu.mmmi.cbse.osgienemy2.Activator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-\end{lstlisting}
-I \textbf{Listing \ref{lst:pom-activator}} ses den pom.xml som peger på den
-klasse som har implementeret bundle activator.
-
+Se video \href{https://www.youtube.com/watch?v=nB84hmut8W0}{youtu.be/nB84hmut8W0}
 
