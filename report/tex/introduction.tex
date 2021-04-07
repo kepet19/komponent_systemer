@@ -1,0 +1,169 @@
+\begin{center}
+{ \LARGE \bfseries Assignment Portfolio 1\\[0.4cm]}
+\end{center}
+
+\section{Introduktion}
+Formålet med opgaven er at komme igennem de forskellige komponent basseret
+arkitektur. De forskellige komponent arkitektur er: 
+
+\begin{itemize}
+ \item whiteboard modellen (Den der er standard i java)
+ \item netbeans module system
+ \item OSGi 
+\end{itemize}
+
+\section{Javalab}
+I denne opgave skulle man lave et ekstra komponent som kunne loades ind
+automatisk uden at blive tilføjet manuelt som dependencies i java filerne.
+
+\subsection{Register komponent}
+først lave jeg en ny "Enemy" komponent som er baseret på player, da mange af
+tingende er de samme. 
+
+Derefter tilføjede jeg Enemy til rodens/root "./pom.xml" filen, hvor den kom
+til at stå som et ekstra modul så maven vidste den skulle compiles med.
+Derefter tilføjede jeg "Enemy" til dependencies inde i "Core/pom.xml". så java
+kunne finde de interfaces som vi ledte efter.  En af de key items er at man
+skal have en "resource" mappe med hvor er er en "META-INF" mappe og i den mappe
+har man en fil med navnet på det interface man siger man implementere. inde i filen
+siger man hvilke klasse der implementere dette interface.
+
+Her har jeg en træ structur af hvordan filerne ser ud.
+\dirtree{%
+.1 Enemy.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.enemysystem.
+.6 Enemy.java.
+.6 EnemyControlSystem.java.
+.6 EnemyPlugin.java.
+.3 resources.
+.4 META-INF.
+.5 navent på det interface man siger man implementere.
+.5 dk.sdu.mmmi.cbse.common.services.IEntityProcessingService.
+.5 dk.sdu.mmmi.cbse.common.services.IGamePluginService.
+}
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.common.services.IEntityProcessingService}, label={lst:App}, language=java]
+dk.sdu.mmmi.cbse.enemysystem.EnemyControlSystem
+\end{lstlisting}
+""
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.common.services.igamepluginservice}, label={lst:app}, language=java]
+dk.sdu.mmmi.cbse.enemysystem.enemyplugin
+\end{lstlisting}
+
+
+\subsection{Hvordan systemet bruger den ny komponent}
+Java søger søger i Core modulet efter dependencies der implementere nogle
+besteme interfaces vi har valgt.
+
+
+
+
+% ======{NetBeansLab1}==========================================================
+\newpage
+\section{NetBeansLab1}
+I denne ogpave skal man lave et netbean module som kan loades ind via
+"Netbeans module system". Der er allered givet example projekt, som jeg har
+udvidet på.
+
+\subsection{Register komponent}
+For at registere et komponent skal man først lave et netbeans module som skal
+lægges ind som dependenci inde i "application/pom.xml", så netbeans module
+system ved at den skal loade modulet som der er blevet lavet.
+
+\dirtree{%
+.1 Astroid6Shapes.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.astroid6shapes.
+.6 AsteroidPlugin.java.
+.6 AsteroidProcessor.java.
+.6 AsteroidSplitterImpl.java.
+.3 nbm.
+.4 manifest.mf.
+.3 resources.
+.4 dk.sdu.mmmi.cbse.astroid6shapes.
+.5 Bundle.properties.
+}
+
+\subsection{Netbeans module system lille og stor}
+Netbeans module system har 2 forskellige systemer en slim uden noget grafisk,
+kun til at loade netbeans modules med og en stor hvor man får netbeans grafiske
+interface med.
+
+
+
+% ======{NetBeansLab2}==========================================================
+\newpage
+\section{NetBeansLab2}
+Netbeans lab 2 skal man vise at netbeans module system kan loade og undeloade
+moduler i runtime/kørslen af programmet. Der der allerede er lavet et modul
+"SilentUpdate" som kan søger for at installere og afinstallér moduler i
+runtime. Det modul smider man så som en dependecy inde i "application/pom.xml"
+filen.
+
+\subsection{Register komponent}
+Denne her gang fjerner jeg det module jeg lavede i netbeans lab 1
+"Astroid6Shapes" dependecy fra "application/pom.xml" for at vise den kan bliver
+loadet ind med SilentUpdate.
+
+
+\dirtree{%
+.1 SilentUpdate.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 org.netbeans.modules.autoupdate.silentupdate.
+.6 UpdateActivator.java.
+.6 UpdateHandler.java.
+.3 nbm.
+.4 manifest.mf.
+.3 resources.
+.4 org.netbeans.modules.autoupdate.silentupdate.
+.5 resources.
+.6 Bundle.properties.
+.6 layer.xml.
+}
+
+I filen "Bundle.properties" skal man pege på ens update center. jeg har valgt at 
+bruge "target" mappen i application mappen som "update site". 
+
+Her under ses den bundle.properties. Linje 7 hvor man kan ændre hvor "netbeans
+site" peger til.  Jeg har dog valgt at ændre navnet til kort et. da det ikke
+ville værer pænt med full path til filen.
+
+\begin{lstlisting}[caption={Bundle.properties}, label={lst:App}]
+#Tue Mar 10 14:13:59 CET 2015
+Services/AutoupdateType/org_netbeans_modules_autoupdate_silentupdate_update_center.instance=Sample Update Center
+OpenIDE-Module-Display-Category=Infrastructure
+OutputLogger.Grain=VERBOSE
+OpenIDE-Module-Name=Silent Update
+OpenIDE-Module-Short-Description=Silent Update of Application
+org_netbeans_modules_autoupdate_silentupdate_update_center=file:///target/netbeans_site/updates.xml
+OpenIDE-Module-Long-Description=A service installing updates of your NetBeans Platform Application with as few as possible user's interactions.
+\end{lstlisting}
+
+\subsection{Netbeans site}
+Netbeans site modulerne består af information om hvad de vil have, hvad de giver
+af service til andre og de indeholder også java byte code (jar filer).
+
+\subsection{Komponentdet bliver loadet og undloadet via silent update}
+Se video: \href{https://www.youtube.com/watch?v=H2Y0cPQ0fzc}{youtube.com/watch?=H2Y0cPQ0fzc}
+
+
+% ======{OSGiLab}===============================================================
+\newpage
+\section{OSGiLab}
+
+\subsection{OSGi Declarative Services}
+\subsection{OSGI BundleContext API}
+
+
+\subsection{Register komponent}
+

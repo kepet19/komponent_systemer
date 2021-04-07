@@ -1,0 +1,33 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{preabmle}
+
+\begin{document}
+    % Removes page numbers
+    \pagenumbering{gobble}
+    \renewcommand{\thesection}{\Roman{section}} 
+    \renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
+
+    % \input{tex/cover.tex}
+    % \newpage
+    
+    % \setcounter{tocdepth}{2} % anything below subsection will not be added
+    % \input{tex/table_of_contents}
+    % \newpage
+    
+    % Start counting from this line
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+
+    \renewcommand{\thesection}{\arabic{section}} 
+    \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+    \setcounter{section}{0}
+
+    \input{tex/introduction.tex}
+    \newpage
+
+    %\bibliographystyle{IEEEtran}
+    %\addcontentsline{toc}{section}{References}
+    %\bibliography{tex/references}
+    %%  
+
+\end{document}
