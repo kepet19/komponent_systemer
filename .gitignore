@@ -2,7 +2,7 @@
 .project
 .settings/
 target/
-runnner/
+runner/
 readme.md
 
 ## Core latex/pdflatex auxiliary files:

@@ -156,21 +156,121 @@ Netbeans site modulerne består af information om hvad de vil have, hvad de give
 af service til andre og de indeholder også java byte code (jar filer).
 
 \subsection{Komponentdet bliver loadet og undloadet via silent update}
-Se video: \href{https://www.youtube.com/watch?v=H2Y0cPQ0fzc}{youtube.com/watch?=H2Y0cPQ0fzc}
+Se video: \href{https://www.youtube.com/watch?v=H2Y0cPQ0fzc}{youtu.be/H2Y0cPQ0fzc}
 
 
 % ======{OSGiLab}===============================================================
 \newpage
 \section{OSGiLab}
-forålet er at blive kendt i ogsi.
-
-valgt at lave 2 nye.
+I OSGI lab skal der laves 2 ny moduler, fordi der skal laves en med OSGi
+Declarative Services og en med OSGi BundeContext API.
 
 \subsection{OSGi Declarative Services}
+I OSGi declarative services bruger vi en "osgi.bnd" til at fortælle OSGi hvilke
+activationpolicy der skal værer. Den fortæller også noget om hvor den kan finde
+noget om de service der bliver leveret fra modulet se \textbf{Listing
+\ref{lst:osgi.bnd}}.
+
+\dirtree{%
+.1 Player.
+.2 \textbf{osgi.bnd}.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.playersystem.
+.6 Player.java.
+.6 PlayerControlSystem.java.
+.6 PlayerPlugin.java.
+.3 resources.
+.4 META-INF.
+.5 entityprocessor.xml.
+.5 \textbf{gameplugin.xml}.
+}
+
+\begin{lstlisting}[caption={osgi.bnd}, label={lst:osgi.bnd}, language=java]
+Bundle-SymbolicName: Player
+Bundle-ActivationPolicy: lazy
+Service-Component: META-INF/entityprocessor.xml, META-INF/gameplugin.xml
+\end{lstlisting}
+
+\begin{lstlisting}[caption={gameplugin.xml}, label={lst:gameplugin.xml}, language=xml]
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="dk.sdu.mmmi.cbse.playersystem.plugin">
+    <implementation class="dk.sdu.mmmi.cbse.playersystem.PlayerPlugin"/>
+    <service>
+        <provide interface="dk.sdu.mmmi.cbse.common.services.IGamePluginService"/>
+    </service>
+</scr:component>
+\end{lstlisting}
 
 
+% #### =========== bundle context API =========== ####
+\newpage
 \subsection{OSGI BundleContext API}
+
+\dirtree{%
+.1 Enemy2.
+.2 \textbf{pom.xml}.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.osgienemy2.
+.6 \textbf{Activator.java}.
+.6 Enemy2.java.
+.6 Enemy2Plugin.java.
+.6 Enemy2Processor.java.
+}
+
+\begin{lstlisting}[caption={Activator.java}, label={lst:Activator.java}, language=java]
+package dk.sdu.mmmi.cbse.osgienemy2;
+
+import dk.sdu.mmmi.cbse.common.services.IEntityProcessingService;
+import dk.sdu.mmmi.cbse.common.services.IGamePluginService;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+public class Activator implements BundleActivator {
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+
+        context.registerService(IGamePluginService.class, new Enemy2Plugin(), null);
+        context.registerService(IEntityProcessingService.class, new Enemy2Processor(), null);
+    }
+
+    public void stop(BundleContext context) throws Exception {
+    }
+
+}
+\end{lstlisting}
+
+I \textbf{Listing \ref{lst:Activator.java}} ses den klasse som har implementeret
+bundle activator.
+
 
 
 \subsection{Register komponent}
+Se video \href{https://www.youtube.com/watch?v=nB84hmut8W0}{youtu.be/nB84hmut8W0}
+
+\subsection{Komponentdet bliver loadet og undloadet via Apache gogo shell}
+\begin{lstlisting}[caption={pom.xml}, label={lst:pom-activator}, language=xml]
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>dk.sdu.mmmi.cbse.osgienemy2.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+\end{lstlisting}
+I \textbf{Listing \ref{lst:pom-activator}} ses den pom.xml som peger på den
+klasse som har implementeret bundle activator.
+
 
