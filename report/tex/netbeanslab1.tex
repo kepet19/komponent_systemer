@@ -1,0 +1,195 @@
+\section{NetBeansLab1}
+I denne ogpave skal man lave et netbean module som kan loades ind via
+"Netbeans module system" som er en implementering af Whiteboard Component
+Model. Der er allered givet et example projekt, som jeg har udvidet på.
+
+\subsection{Register komponent}
+For at registere et komponent skal man først lave et netbeans module som skal
+lægges ind som dependecy inde i "application/pom.xml", så netbeans module
+system ved at den skal loade modulet som der er blevet lavet.
+
+\hfill \linebreak \hline 
+\dirtree{%
+.1 Astroid6Shapes.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.astroid6shapes.
+.6 \textbf{AsteroidPlugin.java}.
+.6 AsteroidProcessor.java.
+.6 AsteroidSplitterImpl.java.
+.3 nbm.
+.4 manifest.mf.
+.3 resources.
+.4 dk.sdu.mmmi.cbse.astroid6shapes.
+.5 Bundle.properties.
+}
+\hline \hfill \linebreak
+
+I \textbf{Listing \ref{lst:AsteroidPlugin}} ses implementation på klassen
+\textbf{AsteroidPlugin.java}. På linje 6 ses en decorator der fortæller netbeanas module 
+system at dette er en klasse som provider IGamePluginService interfacet.
+
+\begin{lstlisting}[caption={AsteroidPlugin.java}, label={lst:AsteroidPlugin}, language=java]
+package dk.sdu.mmmi.cbse.astroid6shapes;
+
+import dk.sdu.mmmi.cbse...*;
+import org.openide.util.lookup.ServiceProvider;
+
+@ServiceProvider(service = IGamePluginService.class)
+public class AsteroidPlugin implements IGamePluginService{
+	@Override
+    public void start(GameData gameData, World world) {
+        ...
+    }
+
+    @Override
+    public void stop(GameData gameData, World world) {
+		world.getEntities(Astroid6shapes.class).forEach(asteroid -> {
+			world.removeEntity(asteroid);
+		});
+    }
+}
+\end{lstlisting}
+
+\subsection{Netbeans module system lille og stor}
+Netbeans module system har 2 forskellige systemer en slim uden noget grafisk,
+kun til at loade netbeans modules med og en stor hvor man får netbeans grafiske
+interface med.
+
+\subsection{Loade modulerene ind via Netbeans}
+Loade modulerne ind via netbeans module system sker ved netbeans Lookup api.
+Man kan se dem med interfacet \code{IGamePluginService} bliver loadet i 
+\textbf{Listing \ref{lst:net1:Game.java}} mellem linje 45 til 52.
+
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.core.main.Game.java}, label={lst:net1:Game.java}, language=java, firstnumber=22]
+public class Game implements ApplicationListener {
+
+    private static OrthographicCamera cam;
+    private ShapeRenderer sr;
+    private final Lookup lookup = Lookup.getDefault();
+    private final GameData gameData = new GameData();
+    private World world = new World();
+    private List<IGamePluginService> gamePlugins = new CopyOnWriteArrayList<>();
+    private Lookup.Result<IGamePluginService> result;
+
+    @Override
+    public void create() {
+        gameData.setDisplayWidth(Gdx.graphics.getWidth());
+        gameData.setDisplayHeight(Gdx.graphics.getHeight());
+
+        cam = new OrthographicCamera(gameData.getDisplayWidth(), gameData.getDisplayHeight());
+        cam.translate(gameData.getDisplayWidth() / 2, gameData.getDisplayHeight() / 2);
+        cam.update();
+
+        sr = new ShapeRenderer();
+
+        Gdx.input.setInputProcessor(new GameInputProcessor(gameData));
+
+        result = lookup.lookupResult(IGamePluginService.class);
+        result.addLookupListener(lookupListener);
+        result.allItems();
+
+        for (IGamePluginService plugin : result.allInstances()) {
+            plugin.start(gameData, world);
+            gamePlugins.add(plugin);
+        }
+    }
+
+    @Override
+    public void render() {
+        // clear screen to black
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        gameData.setDelta(Gdx.graphics.getDeltaTime());
+        gameData.getKeys().update();
+
+        update();
+        draw();
+    }
+
+    private void update() {
+        // Update
+        for (IEntityProcessingService entityProcessorService : getEntityProcessingServices()) {
+            entityProcessorService.process(gameData, world);
+        }
+
+        // Post Update
+        for (IPostEntityProcessingService postEntityProcessorService : getPostEntityProcessingServices()) {
+            postEntityProcessorService.process(gameData, world);
+        }
+    }
+
+    private void draw() {
+        for (Entity entity : world.getEntities()) {
+            sr.setColor(1, 1, 1, 1);
+
+            sr.begin(ShapeRenderer.ShapeType.Line);
+
+            float[] shapex = entity.getShapeX();
+            float[] shapey = entity.getShapeY();
+
+            for (int i = 0, j = shapex.length - 1;
+                    i < shapex.length;
+                    j = i++) {
+
+                sr.line(shapex[i], shapey[i], shapex[j], shapey[j]);
+            }
+
+            sr.end();
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void dispose() {
+    }
+
+    private Collection<? extends IEntityProcessingService> getEntityProcessingServices() {
+        return lookup.lookupAll(IEntityProcessingService.class);
+    }
+
+    private Collection<? extends IPostEntityProcessingService> getPostEntityProcessingServices() {
+        return lookup.lookupAll(IPostEntityProcessingService.class);
+    }
+
+    private final LookupListener lookupListener = new LookupListener() {
+        @Override
+        public void resultChanged(LookupEvent le) {
+
+            Collection<? extends IGamePluginService> updated = result.allInstances();
+
+            for (IGamePluginService us : updated) {
+                // Newly installed modules
+                if (!gamePlugins.contains(us)) {
+                    us.start(gameData, world);
+                    gamePlugins.add(us);
+                }
+            }
+
+            // Stop and remove module
+            for (IGamePluginService gs : gamePlugins) {
+                if (!updated.contains(gs)) {
+                    gs.stop(gameData, world);
+                    gamePlugins.remove(gs);
+                }
+            }
+        }
+
+    };
+}
+\end{lstlisting}

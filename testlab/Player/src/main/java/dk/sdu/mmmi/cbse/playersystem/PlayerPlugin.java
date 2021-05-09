@@ -39,7 +39,6 @@ public class PlayerPlugin implements IGamePluginService {
         playerShip.add(new PositionPart(x, y, radians));
         playerShip.add(new LifePart(6,69)); 
         
-        System.out.println("nice new ship: " + playerShip);
         return playerShip;
     }
 

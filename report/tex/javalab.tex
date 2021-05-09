@@ -1,0 +1,112 @@
+\section{Javalab}
+I denne opgave skulle man lave et ekstra komponent som kunne loades ind via
+java service loader. Java service loader er en implementering af Whiteboard
+Component Model. I denne opgave lærer man hvordan man registere en klasse som
+kan blive loadet ind via java service loader.
+
+
+\subsection{Register komponent}
+først lave jeg en ny "Enemy" komponent som er baseret på player, da mange af
+tingende er de samme. 
+
+Derefter tilføjede jeg Enemy til rodens/root "./pom.xml" filen, hvor den kom
+til at stå som et ekstra modul så maven vidste den skulle compiles med.
+Derefter tilføjede jeg "Enemy" til dependencies inde i "Core/pom.xml". så java
+kunne finde de interfaces som vi ledte efter.  En af de key items er at man
+skal have en "resource" mappe med hvor er er en "META-INF" mappe og i den mappe
+har man en fil med navnet på det interface man siger man implementere. inde i filen
+siger man hvilke klasse der implementere dette interface.
+
+Her har jeg en træ structur af hvordan filerne ser ud.
+
+\hfill \linebreak \hline 
+\dirtree{%
+.1 Enemy.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.enemysystem.
+.6 Enemy.java.
+.6 EnemyControlSystem.java.
+.6 EnemyPlugin.java.
+.3 resources.
+.4 META-INF.
+.5 navent på det interface man siger man implementere.
+.5 dk.sdu.mmmi.cbse.common.services.IEntityProcessingService.
+.5 dk.sdu.mmmi.cbse.common.services.IGamePluginService.
+}
+\hline \hfill \linebreak
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.common.services.IEntityProcessingService}, label={lst:App}, language=java]
+dk.sdu.mmmi.cbse.enemysystem.EnemyControlSystem
+\end{lstlisting}
+""
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.common.services.igamepluginservice}, label={lst:app}, language=java]
+dk.sdu.mmmi.cbse.enemysystem.enemyplugin
+\end{lstlisting}
+
+
+\subsection{Loade modulerne ind via java ServiceLoader}
+I klassen Game som ligger i modulet \code{Core} bruger klassen der hedder
+\code{SPILocator} som ligger I modulet \code{Common}. \code{SPILocator} har en
+methode til at loade klasser ind med et bestemt interface. \code{SPILocator}
+implmentering kan ses i \textbf{Listing \ref{lst:SPILocator.java}}.
+\code{SPILocator} bruger java standard service loader som kan ses på linje 20
+I \textbf{Listing \ref{lst:SPILocator.java}} til at loade de klasser som
+implementere det interface man har givet til serviceloaderen. 
+
+
+Java service loader søger efter et bestemt interface I jar filerne. Jar filerne
+inholder en mappe som hedder \code{META-INF/} hvor de så har en under mappe der
+hedder \code{services/}. I den mappe søger java service loader så efter et
+filnavn med det fulde interface navn(pakken er også med). 
+
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.common.util.SPILocator.java}, label={lst:SPILocator.java}, language=java]
+package dk.sdu.mmmi.cbse.common.util;
+
+import java.util.*;
+
+public class SPILocator {
+
+    @SuppressWarnings("rawtypes")
+    private static final Map<Class, ServiceLoader> loadermap = new HashMap<Class, ServiceLoader>();
+
+    private SPILocator() {
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> locateAll(Class<T> service) {
+        ServiceLoader<T> loader = loadermap.get(service);
+
+        boolean printStatement = false;
+
+        if (loader == null) {
+            loader = ServiceLoader.load(service);
+            loadermap.put(service, loader);
+            printStatement = true;
+        }
+
+        List<T> list = new ArrayList<T>();
+
+        if (loader != null) {
+            try {
+                for (T instance : loader) {
+                    list.add(instance);
+                }
+            } catch (ServiceConfigurationError serviceError) {
+                serviceError.printStackTrace();
+            }
+        }
+
+        if (printStatement) {
+            System.out.println("Found " + list.size() + " implementations for interface: " + service.getName());
+        }
+
+        return list;
+    }
+}
+\end{lstlisting}
+
+

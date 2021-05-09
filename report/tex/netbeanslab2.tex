@@ -1,0 +1,59 @@
+\section{NetBeansLab2}
+Netbeans lab 2 skal man vise at netbeans module system kan loade og undeloade
+moduler i runtime/kørslen af programmet. Der der allerede er lavet et modul
+"SilentUpdate" som kan søger for at installere og afinstallér moduler i
+runtime. Det modul smider man så som en dependecy inde i "application/pom.xml"
+filen.
+
+\subsection{Register komponent}
+Denne her gang fjerner jeg det module jeg lavede i netbeans lab 1
+"Astroid6Shapes" dependecy fra "application/pom.xml" for at vise den kan bliver
+loadet ind med SilentUpdate.
+
+
+\hfill \linebreak \hline 
+\dirtree{%
+.1 SilentUpdate.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 org.netbeans.modules.autoupdate.silentupdate.
+.6 UpdateActivator.java.
+.6 UpdateHandler.java.
+.3 nbm.
+.4 manifest.mf.
+.3 resources.
+.4 org.netbeans.modules.autoupdate.silentupdate.
+.5 resources.
+.6 Bundle.properties.
+.6 layer.xml.
+}
+\hline \hfill \linebreak
+
+I filen "Bundle.properties" skal man pege på ens update center. jeg har valgt at 
+bruge "target" mappen i application mappen som "update site". 
+
+Her under ses den bundle.properties. Linje 7 hvor man kan ændre hvor "netbeans
+site" peger til.  Jeg har dog valgt at ændre navnet til kort et. da det ikke
+ville værer pænt med full path til filen.
+
+\begin{lstlisting}[caption={Bundle.properties}, label={lst:App}]
+#Tue Mar 10 14:13:59 CET 2015
+Services/AutoupdateType/org_netbeans_modules_autoupdate_silentupdate_update_center.instance=Sample Update Center
+OpenIDE-Module-Display-Category=Infrastructure
+OutputLogger.Grain=VERBOSE
+OpenIDE-Module-Name=Silent Update
+OpenIDE-Module-Short-Description=Silent Update of Application
+org_netbeans_modules_autoupdate_silentupdate_update_center=file:///target/netbeans_site/updates.xml
+OpenIDE-Module-Long-Description=A service installing updates of your NetBeans Platform Application with as few as possible user's interactions.
+\end{lstlisting}
+
+\subsection{Netbeans site}
+Netbeans site modulerne består af information om hvad de vil have, hvad de giver
+af service til andre og de indeholder også java byte code (jar filer).
+
+\subsection{Komponentdet bliver loadet og undloadet via silent update}
+Se video: \href{https://www.youtube.com/watch?v=H2Y0cPQ0fzc}{youtu.be/H2Y0cPQ0fzc}
+
+
