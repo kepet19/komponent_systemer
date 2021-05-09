@@ -9,13 +9,13 @@ kan blive loadet ind via java service loader.
 først lave jeg en ny "Enemy" komponent som er baseret på player, da mange af
 tingende er de samme. 
 
-Derefter tilføjede jeg Enemy til rodens/root "./pom.xml" filen, hvor den kom
-til at stå som et ekstra modul så maven vidste den skulle compiles med.
-Derefter tilføjede jeg "Enemy" til dependencies inde i "Core/pom.xml". så java
-kunne finde de interfaces som vi ledte efter.  En af de key items er at man
-skal have en "resource" mappe med hvor er er en "META-INF" mappe og i den mappe
-har man en fil med navnet på det interface man siger man implementere. inde i filen
-siger man hvilke klasse der implementere dette interface.
+Derefter tilføjede jeg Enemy til \code{rodens/root} og \code{./pom.xml} filen,
+hvor den kom til at stå som et ekstra modul så maven vidste den skulle compiles
+med. Derefter tilføjede jeg "Enemy" til dependencies inde i "Core/pom.xml". så
+java kunne finde de interfaces som vi ledte efter.  En af de key items er at
+man skal have en "resource" mappe med hvor er er en "META-INF" mappe og i den
+mappe har man en fil med navnet på det interface man siger man implementere.
+inde i filen siger man hvilke klasse der implementere dette interface.
 
 Her har jeg en træ structur af hvordan filerne ser ud.
 

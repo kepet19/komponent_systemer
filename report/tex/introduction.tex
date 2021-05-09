@@ -11,3 +11,17 @@ arkitektur se fordele og ulemper ved dem.
 Finde ud af hvad forskellen er på Whiteboard Component Model og Dependency
 Injection og se om man finde ud af hvad de forskellige framework har
 implementeret.
+
+
+\subsection{Whiteboard Component Model}
+Whiteboard component model går ud på man registerer sit modul/klasse i et 
+bestemt \code{Component Registry}. I den component registry kan man så søge
+efter klasser som har implementeret et bestemt interface. De klasser som component
+registry finder bliver så givet tilbage til spørgen. I den klasse hvor jeg har
+søgt i component registry giver mig så en klasse tilbage instantieret form.
+
+
+\subsection{Dependency Injection}
+Dependency injection er når en assembler står for at oprettet klasse og så
+enten sætte den ind på en anden klasse via den konstruktøren eller en sætter
+metode på klassen.
