@@ -1,6 +1,12 @@
 \usepackage[utf8]{inputenc}
 % Resten af pakkerne
 \usepackage[english]{babel}
+\usepackage{dejavu}
+\usepackage[T1]{fontenc}
+
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
 \usepackage{csquotes}
 \usepackage{float}
 \usepackage{flafter}
@@ -21,34 +27,34 @@
 \usepackage{amssymb}
 \usepackage{dirtree}
 \usepackage{hyperref} 
+\usepackage[smartEllipses]{markdown}
 
 \usepackage{listings}
 
 \usepackage{ragged2e}
 
-\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygreen}{rgb}{0,0.7,0.3}
+\definecolor{mygreen2}{rgb}{0,0.5,0.0}
+\definecolor{myblue}{rgb}{0.21176,0.6392157,0.8509804}
+\definecolor{lstgrey}{rgb}{0.97,0.97,0.97}
+\definecolor{myblack}{rgb}{0,0,0}
 
-\lstnewenvironment{code}[1][]%
-{
-   \noindent
-   \minipage{\linewidth} 
-   \vspace{0.5\baselineskip}
-   \lstset{language=java, basicstyle=\ttfamily\footnotesize,frame=single,#1}}
-{\endminipage}
 
+\newcommand\code[1]{\colorbox{lstgrey}{{\lstinline`#1`}}}
 
 \lstset{
-    stringstyle=\color{mygreen},            % changing string colour to green
+    backgroundcolor=\color{lstgrey},
+    % stringstyle=\color{mygreen},            % changing string colour to green
     frame=single,                           % adds a frame around the code
     language=Java,                          % the language of the code
     breaklines=true,                        % sets automatic line breaking
-    basicstyle=\small,                      % the size of the fonts that are used for the code
-    keywordstyle=\color{blue},              % keyword style
+    basicstyle=\footnotesize\ttfamily,                      % the size of the fonts that are used for the code
+    keywordstyle=\color{myblue}\textbf,              % keyword style
     morekeywords={var, UUID, ROLE, EMAIL},  % if you want to add more keywords to the set
     numbers=left,                           % % where to put the line-numbers; possible values are (none, left, right)
-    numberstyle=\small,                     % the style that is used for the line-numbers
-    commentstyle=\color{mygreen},           % comment style
-    captionpos=b,                           % sets the caption-position to bottom
+    numberstyle=\footnotesize\ttfamily,     % the style that is used for the line-numbers
+    % commentstyle=\color{mygreen2},           % comment style
+    captionpos=t,                           % sets the caption-position to bottom
     showstringspaces=false,                 % removes spaces in string
     inputencoding=utf8,
     extendedchars=true,

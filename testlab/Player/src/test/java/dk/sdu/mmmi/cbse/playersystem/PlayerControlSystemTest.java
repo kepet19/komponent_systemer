@@ -1,5 +1,6 @@
 package dk.sdu.mmmi.cbse.playersystem;
 
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -12,23 +13,25 @@ public class PlayerControlSystemTest {
     public void process() {
         World world = new World();
         GameData gameData = new GameData();
+        gameData.setDisplayHeight(400);
+        gameData.setDisplayWidth(500);
         gameData.getKeys().setKey(GameKeys.UP, true);
         new PlayerPlugin().start(gameData, world);
 
         Entity player = world.getEntities(Player.class).get(0);
         PositionPart positionPart = player.getPart(PositionPart.class);
 
-        System.out.println("positionPart.x: " + positionPart.getX() + " - positionPart.y: " + positionPart.getY());
-
+        assertEquals(gameData.getDisplayWidth() / 2 , positionPart.getX());
+        assertEquals(gameData.getDisplayHeight() / 2 , positionPart.getY());
+        gameData.setDelta(0.5f);
         new PlayerControlSystem().process(gameData, world);
-
         System.out.println("positionPart.x: " + positionPart.getX() + " - positionPart.y: " + positionPart.getY());
-        assertTrue(false);
+
+
+
     }
 
     @Test
     public void proces1() {
-        assertNotNull(null);
-        assertTrue(false);
     }
 }

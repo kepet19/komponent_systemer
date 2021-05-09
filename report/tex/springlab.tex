@@ -1,0 +1,220 @@
+\section{SpringLab}
+I denne opgave skal man porte \textbf{[JavaLab]}  til at være basseret på Spring
+framworket.
+Det har jeg gjort ved først at kigge på \textbf{[SpringAgeCalculator]} for at få
+en ide om hvordan det virker.
+
+Derefter åbenede jeg project fra \textbf{[JavaLab]} og fandt ud af hvilke moduler som skulle depency injectes via
+spring frameworket.
+Dem der skulle konventeres er:
+\begin{itemize}
+    \setlength\itemsep{-0.5em}
+    \item \textbf{Asteroid} 
+    \item \textbf{Collision} 
+    \item \textbf{Enemy} 
+    \item \textbf{Player} 
+\end{itemize}
+
+\subsection{Enemy modulet}%
+\label{sub:enemy_module}
+
+
+Jeg tager udgangspunkt I \textbf{Enemy}. 
+Fil træet for enemy ser sådan ud. 
+
+\hfill \linebreak \hline
+\dirtree{%
+.1 Enemy.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.enemysystem.
+.6 Enemy.java.
+.6 EnemyControlSystem.java.
+.6 EnemyPlugin.java.
+.3 resources.
+.4 enemyBean.xml.
+.2 pom.xml.
+}
+\hline \hfill \linebreak
+
+Det vigtigste der har ændret sig i filen strukturen er der er kommet en ny
+fil(\textbf{enemyBean.xml}) der beskriver et id på en bean og hvor man kan
+finde den. Jeg har også slettet mappen \textbf{META-INF} der blev brugt til
+Java's service loader. \\ enemyBean.xml kan ses i \textbf{\textbf{Listing
+\ref{lst:enemyBean.xml}}}. Beans id'erne skal bruges i den bean hvor jeg samler
+det hele (kommer senere).
+
+\begin{lstlisting}[caption={enemyBean.xml}, label={lst:enemyBean.xml}, language=xml]
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="enemyControlSystem" class="dk.sdu.mmmi.cbse.enemysystem.EnemyControlSystem"/>
+    <bean id="enemyPlugin" class="dk.sdu.mmmi.cbse.enemysystem.EnemyPlugin"/>
+
+</beans>
+\end{lstlisting}
+
+
+\subsection{Core modulet}%
+\label{sub:core_modulet}
+
+
+
+I \textbf{Core} modulet skal der en ny dependency in i pom.xml. filen kan ses i
+\textbf{\textbf{Listing \ref{lst:spring:core:pom.xml}}}. Der kommer jeg spring frameworket
+dependency'en ind.
+
+
+\begin{lstlisting}[caption={core:pom.xml}, label={lst:spring:core:pom.xml}, language=xml, firstnumber=92]
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.1.5.RELEASE</version>
+        </dependency>
+\end{lstlisting}
+
+Derefter opretter jeg en ny fill der hedder \textbf{Beans.xml} den står så for
+at beskrive hvordan bean ser ud i filen. Bean id'et er "core" og klassen er
+Game. I Beans.xml filen importer jeg også de andre xml filer. På linje
+6 i \textbf{Listing \ref{lst:Beans.xml}} kan man se at den tidligere beskrevet
+enemyBean.xml bliver importeder her. \\
+I den bean man er i gang med at beskrive(core) er der en property. Den property
+har et navn som skal være tilgændelig som en sætter methode i Game klassen før
+spring kan dependency injecte de andre klasser. Property'en har en liste med
+"value-type" som siger at listen er af dette interface og pejer på interfacet
+klassen.  klasserne som implementere det tidligere nævnte interface som man
+gerne vil have dependency injectet skal man putte i listen. Listen består af
+id'er på de andre beans. 
+
+
+\hfill \linebreak
+\hline
+\dirtree{%
+.1 Core.
+.2 pom.xml.
+.2 src.
+.3 main.
+.4 java.
+.5 dk.sdu.mmmi.cbse.
+.6 main.
+.7 Game.java.
+.7 Main.java.
+.6 managers.
+.7 GameInputProcessor.java.
+.3 resources.
+.4 Beans.xml.
+}
+\hline
+\hfill \linebreak
+
+\begin{lstlisting}[caption={Beans.xml}, label={lst:Beans.xml}, language=xml]
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <import resource="asteroidsBean.xml" />
+    <import resource="collisionBean.xml" />
+    <import resource="playerBean.xml" />
+    <import resource="enemyBean.xml" />
+
+    <bean id="core" class="dk.sdu.mmmi.cbse.main.Game">
+        <property name="entityProcessors">
+            <list value-type="dk.sdu.mmmi.cbse.common.services.IEntityProcessingService">
+                <ref bean="playerControlSystem"/>
+                <ref bean="asteroidControlSystem"/>
+                <ref bean="asteroidSplitter"/>
+                <ref bean="enemyControlSystem"/>
+
+            </list>
+        </property>
+        <property name="postEntityProcessors">
+            <list value-type="dk.sdu.mmmi.cbse.common.services.IPostEntityProcessingService">
+                <ref bean="collider"/>
+                <ref bean="asteroidPlugin"/>
+            </list>
+        </property>
+        <property name="pluginServices">
+            <list value-type="dk.sdu.mmmi.cbse.common.services.IGamePluginService">
+                <ref bean="playerPlugin"/>
+                <ref bean="asteroidPlugin"/>
+                <ref bean="enemyPlugin"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
+\end{lstlisting}
+
+I \textbf{\textbf{Listing \ref{lst:spring:Game.java}}} ses der er lavet endnu en liste med
+gamePlugin.
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.main.Game.java}, label={lst:spring:Game.java}, language=java, firstnumber=13]
+public class Game
+        implements ApplicationListener {
+
+    private static OrthographicCamera cam;
+    private ShapeRenderer sr;
+
+    private final GameData gameData = new GameData();
+    private List<IEntityProcessingService> entityProcessors = new ArrayList<>();
+    private List<IPostEntityProcessingService> postEntityProcessors = new ArrayList<>();
+    private List<IGamePluginService> gamePlugin = new ArrayList<>();
+\end{lstlisting}
+
+I \textbf{\textbf{Listing \ref{lst:spring:Game.java.2}}} ses der er lavet 3 methoder så spring kan
+dependency injecte klasserne.
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.main.Game.java}, label={lst:spring:Game.java.2}, language=java, firstnumber=109]
+    public void setPluginServices(List<IGamePluginService> gamePlugin) {
+        this.gamePlugin = gamePlugin;
+    }
+
+    public void setPostEntityProcessors(List<IPostEntityProcessingService> 
+            postEntityProcessors) {
+        this.postEntityProcessors = postEntityProcessors;
+    }
+
+    public void setEntityProcessors(List<IEntityProcessingService> 
+            entityProcessors) {
+        this.entityProcessors = entityProcessors;
+    }
+}
+\end{lstlisting}
+
+
+For at oprette et game objecet/klasse med spring framworket skal man importere
+spring framworket ClassPathXmlApplicationContext. Kalde konstrukteren på
+ClassPathXmlApplicationContext med parameteret på den Bean.xml man har lavet.
+Efter at have fået applicationContex fra ClassPathXmlApplicationContext kan man
+få selve bean ud ved at kalde methoden \code{getBean()} med et parameter id.
+Id'et er fra den bean man gerne vil have. Vi kunne godt tænke us den fra core
+som er game klassen. Det kan ses i \textbf{Listing \ref{lst:spring:Main.java}} på linje
+10. Der caster vi den så til et Game object, så den kan bruges normalt.
+Spring frameworket har sørget for at gører de dele som er beskrevet i
+\code{Beans.xml} og dependency inject de klasser som er beskrevet.
+
+
+\begin{lstlisting}[caption={dk.sdu.mmmi.cbse.main.Main.java}, label={lst:spring:Main.java}, language=java, firstnumber=1]
+package dk.sdu.mmmi.cbse.main;
+
+import com.badlogic.gdx.backends.lwjgl.*;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Main {
+
+    public static void main(String[] args) {
+        var context = new ClassPathXmlApplicationContext("Beans.xml");
+        Game game = (Game) context.getBean("core");
+
+        LwjglApplicationConfiguration cfg =
+        new LwjglApplicationConfiguration();
+        cfg.title = "Asteroids";
+        cfg.width = 500;
+        cfg.height = 400;
+        cfg.useGL30 = false;
+        cfg.resizable = false;
+
+        new LwjglApplication(game, cfg);
+
+    }
+
+    }
+\end{lstlisting}

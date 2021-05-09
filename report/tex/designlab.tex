@@ -1,0 +1,84 @@
+\section{DesignLab}
+
+
+\subsection{opgave 1}%
+\label{sub:opgave_1}
+I denne opgave skal man tælle afhængighed dybde(dependency depth) i det
+monolitisk spil Asteroids og I det modul baseret spil Asteroids
+\textbf{[NetbeansLab2]} 
+
+
+I \textbf{Tablen \ref{table:mono_dependency}} sidste kolonne er der dependency
+depth ved nogle af tallende står der en "*" astrict betyder den er den er
+cyclist dependency. Hvis vi tager udgangs punkt i klassen \code{PlayState} kan
+man se fra den første dependecy \code{GameStateManager} at den referere tilbage
+til \code{PlayState} og \code{GameStateManager} har også en dependency på
+\code{GameState} referere direkte tilbage til \code{GameStateManager}.  Den vej
+jeg har fundet som er mest dyb uden at gå i samme dependency er
+\code{Player>SpaceObject>Game>GameKeys} fra \code{PlayState}.
+
+Ud fra \textbf{Table \ref{table:mono_dependency}} og \textbf{Table
+\ref{table:module_dependency}} har jeg konkluderet at det er nemmere at
+villigeholde i den komponent baseret spil da der er en meget lille kobling.
+
+\begin{table}[H]
+    \captionof{table}{List of dependency depth for monolithic Asteroids Game}
+    \begin{tabularx}{\textwidth}{|>{\RaggedRight}p{0.7cm}|>{\RaggedRight}p{3.7cm}|>{\RaggedRight}X|>{\RaggedRight}p{3.5cm}|}
+        \hline
+        \textbf{NR} & \textbf{CLASS}     & \textbf{DEPENDS ON}                                    & \textbf{DEPENDENCY DEPTH} \\ \hline
+        1           & GameKeys           &                                                        & 0                         \\ \hline
+        2           & GameInputProcessor & GameKeys                                               & 1                         \\ \hline
+        3           & PlayState          & GameStateManager, GameState, Player, GameKeys          & 4*                        \\ \hline
+        4           & GameStateManager   & GameState, PlayState                                   & 5*                        \\ \hline
+        5           & Game               & GameStateManager, Player, GameKeys, GameInputProcessor & 5*                        \\ \hline
+        6           & SpaceObject        & Game                                                   & 5*                        \\ \hline
+        7           & Player             & SpaceObject, Game, PlayState                           & 5*                        \\ \hline
+        8           & GameState          & GameStateManager                                       & 6*                        \\ \hline
+        9           & Main               & Game                                                   & 6*                        \\ \hline
+    \end{tabularx}
+    \label{table:mono_dependency}
+\end{table}
+
+
+\begin{table}[H]
+    \captionof{table}{List of dependency depth for module based Asteroids Game}
+    \begin{tabularx}{\textwidth}{|>{\RaggedRight}p{0.7cm}|>{\RaggedRight}p{3.7cm}|>{\RaggedRight}X|>{\RaggedRight}p{3.5cm}|}
+        \hline
+        \textbf{NR} & \textbf{CLASS}     & \textbf{DEPENDS ON}     & \textbf{DEPENDENCY DEPTH}  \\ \hline
+        1           & Common             &                         & 0                          \\ \hline
+        2           & SilentUpdate       &                         & 0                          \\ \hline
+        3           & CommonBullet       & Common                  & 1                          \\ \hline
+        4           & CommonEnemy        & Common                  & 1                          \\ \hline
+        5           & CommonAsteroids    & Common                  & 1                          \\ \hline
+        6           & Collision          & Common                  & 1                          \\ \hline
+        7           & Core               & Common                  & 1                          \\ \hline
+        8           & Player             & Common, CommonBullet    & 2                          \\ \hline
+        9           & Bullet             & Common, CommonBullet    & 2                          \\ \hline
+        10          & Enemy              & Common, CommonEnemy     & 2                          \\ \hline
+        11          & Asteroid           & Common, CommonAsteroids & 2                          \\ \hline
+        12          & Asteroid6Shapes    & Common, CommonAsteroids & 2                          \\ \hline
+
+    \end{tabularx}
+    \label{table:module_dependency}
+\end{table}
+
+\subsection{Fordele og ulemper ved komponent baseret design}%
+\label{sub:Fordele_ulemper_design}
+
+Hvad er fordele og ulemper ved komponent baseret design? \\
+\textbf{Fordele:}
+\begin{itemize}
+    \item Man for som regel løs kobling og høj samhørlighed (low coupling and
+        high cohesion).
+    \item Mange gange for man kode som er nemmere at villigeholde og udskifte
+        på komponenterne.
+\end{itemize}
+
+\textbf{Ulemper:}
+\begin{itemize}
+    \item Det kan tage længere tid at designe da man skal finde ud af hvor man
+    skal sætte grænserne for komponenterne.  
+    \item Hvis man designer noget
+        forkert kan det værre svært at ændre komponent interface, da der måske
+        er flere komponenter der allerede er afhængige af det.
+\end{itemize}

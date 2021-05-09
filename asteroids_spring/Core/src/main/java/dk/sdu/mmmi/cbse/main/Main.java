@@ -1,15 +1,12 @@
 package dk.sdu.mmmi.cbse.main;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-
+import com.badlogic.gdx.backends.lwjgl.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.ApplicationContext;
 
 public class Main {
 	
 	public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+        var context = new ClassPathXmlApplicationContext("Beans.xml");
         Game game = (Game) context.getBean("core");
 		
 		LwjglApplicationConfiguration cfg =

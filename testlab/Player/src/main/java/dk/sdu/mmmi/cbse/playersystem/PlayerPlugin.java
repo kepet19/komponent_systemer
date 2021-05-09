@@ -18,8 +18,8 @@ public class PlayerPlugin implements IGamePluginService {
     @Override
     public void start(GameData gameData, World world) {
         // Add entities to the world
-        player = createPlayerShip(gameData);
-        world.addEntity(player);
+        this.player = createPlayerShip(gameData);
+        world.addEntity(this.player);
     }
 
     private Entity createPlayerShip(GameData gameData) {
@@ -39,13 +39,13 @@ public class PlayerPlugin implements IGamePluginService {
         playerShip.add(new PositionPart(x, y, radians));
         playerShip.add(new LifePart(6,69)); 
         
+        System.out.println("nice new ship: " + playerShip);
         return playerShip;
     }
 
     @Override
     public void stop(GameData gameData, World world) {
-        // Remove entities
-        world.removeEntity(player);
+        world.removeEntity(this.player);
     }
 
 }

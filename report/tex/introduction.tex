@@ -32,6 +32,8 @@ har man en fil med navnet på det interface man siger man implementere. inde i f
 siger man hvilke klasse der implementere dette interface.
 
 Her har jeg en træ structur af hvordan filerne ser ud.
+
+\hfill \linebreak \hline 
 \dirtree{%
 .1 Enemy.
 .2 pom.xml.
@@ -48,6 +50,7 @@ Her har jeg en træ structur af hvordan filerne ser ud.
 .5 dk.sdu.mmmi.cbse.common.services.IEntityProcessingService.
 .5 dk.sdu.mmmi.cbse.common.services.IGamePluginService.
 }
+\hline \hfill \linebreak
 
 \begin{lstlisting}[caption={dk.sdu.mmmi.cbse.common.services.IEntityProcessingService}, label={lst:App}, language=java]
 dk.sdu.mmmi.cbse.enemysystem.EnemyControlSystem
@@ -77,6 +80,7 @@ For at registere et komponent skal man først lave et netbeans module som skal
 lægges ind som dependenci inde i "application/pom.xml", så netbeans module
 system ved at den skal loade modulet som der er blevet lavet.
 
+\hfill \linebreak \hline 
 \dirtree{%
 .1 Astroid6Shapes.
 .2 pom.xml.
@@ -93,6 +97,7 @@ system ved at den skal loade modulet som der er blevet lavet.
 .4 dk.sdu.mmmi.cbse.astroid6shapes.
 .5 Bundle.properties.
 }
+\hline \hfill \linebreak
 
 I \textbf{Listing \ref{lst:AsteroidPlugin}} ses implementation på klassen
 \textbf{AsteroidPlugin.java}. På linje 6 ses en decorator der fortæller netbeanas module 
@@ -142,6 +147,7 @@ Denne her gang fjerner jeg det module jeg lavede i netbeans lab 1
 loadet ind med SilentUpdate.
 
 
+\hfill \linebreak \hline 
 \dirtree{%
 .1 SilentUpdate.
 .2 pom.xml.
@@ -159,6 +165,7 @@ loadet ind med SilentUpdate.
 .6 Bundle.properties.
 .6 layer.xml.
 }
+\hline \hfill \linebreak
 
 I filen "Bundle.properties" skal man pege på ens update center. jeg har valgt at 
 bruge "target" mappen i application mappen som "update site". 
@@ -198,6 +205,7 @@ activationpolicy der skal værer. Den fortæller også noget om hvor den kan fin
 noget om de service der bliver leveret fra modulet se \textbf{Listing
 \ref{lst:osgi.bnd}}.
 
+\hfill \linebreak \hline 
 \dirtree{%
 .1 Player.
 .2 \textbf{osgi.bnd}.
@@ -214,6 +222,7 @@ noget om de service der bliver leveret fra modulet se \textbf{Listing
 .5 entityprocessor.xml.
 .5 \textbf{gameplugin.xml}.
 }
+\hline \hfill \linebreak
 
 \begin{lstlisting}[caption={osgi.bnd}, label={lst:osgi.bnd}, language=java]
 Bundle-SymbolicName: Player
@@ -240,6 +249,7 @@ listest på linje 5.
 \newpage
 \subsection{OSGI BundleContext API}
 
+\hfill \linebreak \hline 
 \dirtree{%
 .1 Enemy2.
 .2 \textbf{pom.xml}.
@@ -252,6 +262,7 @@ listest på linje 5.
 .6 Enemy2Plugin.java.
 .6 Enemy2Processor.java.
 }
+\hline \hfill \linebreak
 
 \subsection{Register komponent}
 

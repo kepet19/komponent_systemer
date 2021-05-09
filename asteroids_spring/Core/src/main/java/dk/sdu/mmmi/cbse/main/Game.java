@@ -5,16 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import dk.sdu.mmmi.cbse.common.data.Entity;
-import dk.sdu.mmmi.cbse.common.data.GameData;
-import dk.sdu.mmmi.cbse.common.data.World;
-import dk.sdu.mmmi.cbse.common.services.IEntityProcessingService;
-import dk.sdu.mmmi.cbse.common.services.IGamePluginService;
-import dk.sdu.mmmi.cbse.common.services.IPostEntityProcessingService;
+import dk.sdu.mmmi.cbse.common.data.*;
+import dk.sdu.mmmi.cbse.common.services.*;
 import dk.sdu.mmmi.cbse.managers.GameInputProcessor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class Game
         implements ApplicationListener {
@@ -116,11 +110,13 @@ public class Game
         this.gamePlugin = gamePlugin;
     }
 
-    public void setPostEntityProcessors(List<IPostEntityProcessingService> postEntityProcessors) {
+    public void setPostEntityProcessors(List<IPostEntityProcessingService> 
+            postEntityProcessors) {
         this.postEntityProcessors = postEntityProcessors;
     }
 
-    public void setEntityProcessors(List<IEntityProcessingService> entityProcessors) {
+    public void setEntityProcessors(List<IEntityProcessingService> 
+            entityProcessors) {
         this.entityProcessors = entityProcessors;
     }
 }
