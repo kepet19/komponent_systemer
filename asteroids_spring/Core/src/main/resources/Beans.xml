@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="asteroidsBean.xml" />
+    <import resource="collisionBean.xml" />
+    <import resource="playerBean.xml" />
+    <import resource="enemyBean.xml" />
+
+    <bean id="core" class="dk.sdu.mmmi.cbse.main.Game">
+        <property name="entityProcessors">
+            <list value-type="dk.sdu.mmmi.cbse.common.services.IEntityProcessingService">
+                <ref bean="playerControlSystem"/>
+                <ref bean="asteroidControlSystem"/>
+                <ref bean="asteroidSplitter"/>
+                <ref bean="enemyControlSystem"/>
+
+            </list>
+        </property>
+        <property name="postEntityProcessors">
+            <list value-type="dk.sdu.mmmi.cbse.common.services.IPostEntityProcessingService">
+                <ref bean="collider"/>
+                <ref bean="asteroidPlugin"/>
+            </list>
+        </property>
+        <property name="pluginServices">
+            <list value-type="dk.sdu.mmmi.cbse.common.services.IGamePluginService">
+                <ref bean="playerPlugin"/>
+                <ref bean="asteroidPlugin"/>
+                <ref bean="enemyPlugin"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
